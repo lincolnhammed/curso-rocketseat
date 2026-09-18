@@ -48,6 +48,8 @@ public class SecurityConfig {
 
                 // =================================================
                 // REGRAS DE ACESSO
+                // guarda as regras de autorização:
+                //montando a cadeia de filtros.
                 // =================================================
                 .authorizeHttpRequests(auth -> auth
 
@@ -76,6 +78,8 @@ public class SecurityConfig {
                 // Nosso filtro será executado antes do filtro
                 // padrão de autenticação por username/password
                 // do Spring Security.
+
+                //.httpBasic(Customizer.withDefaults())
                 .addFilterBefore(
                         filterTaskAuth,
                         UsernamePasswordAuthenticationFilter.class
