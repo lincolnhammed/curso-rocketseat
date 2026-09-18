@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -51,6 +52,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
+        System.out.println("aqui estou");
         // Verifica se a requisição é:
         //
         // POST /users/
@@ -167,10 +169,10 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 
 
             // Primeiro elemento = username
-            String username = credentials[0];
+            String username = credentials[0]; //lincoln
 
             // Segundo elemento = password
-            String password = credentials[1];
+            String password = credentials[1];// senha
 
 
             // ====================================================
@@ -224,9 +226,11 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             // username = nome do usuário autenticado
             // null     = não precisamos guardar a senha aqui
             // emptyList = usuário sem roles/permissões específicas
+
+
             var authentication =
                     new UsernamePasswordAuthenticationToken(
-                            username,
+                            user,
                             null,
                             Collections.emptyList()
                     );
@@ -238,10 +242,33 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 
             // O SecurityContext guarda a informação de que
             // esse usuário está autenticado durante a requisição.
-            SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(authentication);
 
+           /* SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);*/
+
+            // ====================================================
+            // 7. CRIA O SECURITY CONTEXT
+            // ====================================================
+
+            var context =
+                    SecurityContextHolder.createEmptyContext();
+
+            context.setAuthentication(authentication);
+
+            // ====================================================
+            // 8. COLOCA O CONTEXTO NO SECURITYCONTEXTHOLDER
+            // ====================================================
+
+            SecurityContextHolder
+                    .setContext(context);
+
+            // ====================================================
+            // 9. SALVA O CONTEXTO NA REQUEST
+            // ====================================================
+
+            new RequestAttributeSecurityContextRepository()
+                    .saveContext(context, request, response);
 
             // ====================================================
             // 10. CONTINUAR A REQUISIÇÃO
