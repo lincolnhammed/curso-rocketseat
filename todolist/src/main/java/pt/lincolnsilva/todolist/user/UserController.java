@@ -28,7 +28,7 @@ public class UserController {
     // POST /users/
     //
     @PostMapping("/")
-    public ResponseEntity create(@RequestBody UserModel userModel) {
+    public ResponseEntity<?> create(@RequestBody UserModel userModel) {
 
 
         // ========================================================
