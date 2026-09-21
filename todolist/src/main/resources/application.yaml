@@ -1,17 +1,35 @@
+#
+#spring:
+#  application:
+#    name: todolist
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/cursoRocketseat?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
+#    username: ${DATABASE_USER:root}
+#    password: ${DATABASE_PASSWORD:root}
+#    # driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      #ddl-auto: create-drop
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
 
 spring:
   application:
     name: todolist
   datasource:
-    url: jdbc:mysql://localhost:3306/cursoRocketseat?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
-    username: ${DATABASE_USER:root}
+    # Usa a variável DATABASE_URL do Render se existir; caso contrário, usa o PostgreSQL local
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/cursoRocketseat}
+    username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:root}
-    # driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      #ddl-auto: create-drop
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
