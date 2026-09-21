@@ -3,7 +3,7 @@ FROM ubuntu:latest as build
 RUN apt-get update && \
     apt-get install -y openjdk-25-jdk
 
-COPY . .
+COPY todolist .
 
 RUN apt-get install maven -y
 RUN mvn clean install
