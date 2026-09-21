@@ -3,6 +3,8 @@ FROM ubuntu:latest AS build
 RUN apt-get update && \
     apt-get install -y openjdk-25-jdk
 
+WORKDIR /app
+
 COPY . .
 
 RUN apt-get install maven -y
