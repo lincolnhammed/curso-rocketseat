@@ -21,7 +21,7 @@ spring:
     name: todolist
   datasource:
     # Usa a variável DATABASE_URL do Render se existir; caso contrário, usa o PostgreSQL local
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/cursoRocketseat}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/cursorocketseat}
     username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
