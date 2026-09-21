@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN mvn clean package -DskipTests
+RUN pwd && ls -la && find . -maxdepth 2 -name pom.xml
 
 FROM eclipse-temurin:25-jre
 
