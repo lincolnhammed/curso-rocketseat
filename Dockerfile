@@ -1,20 +1,20 @@
 FROM ubuntu:latest AS build
 
 RUN apt-get update && \
-    apt-get install -y openjdk-25-jdk
+    apt-get install -y openjdk-25-jdk maven
 
 WORKDIR /app
 
 COPY . .
 
-RUN apt-get install maven -y
+RUN mvn clean package -DskipTests
 
-RUN mvn clean install
+FROM openjdk:25-jdk-slim
+
+WORKDIR /app
+
+COPY --from=build /app/target/todolist-1.0.0.jar app.jar
 
 EXPOSE 8080
-
-COPY target/todolist-1.0.0.jar app.jar
-
-LABEL authors="lincoln"
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
