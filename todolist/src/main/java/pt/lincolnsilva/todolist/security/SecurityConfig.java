@@ -9,7 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import pt.lincolnsilva.todolist.filter.FilterTaskAuth;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -30,15 +36,102 @@ public class SecurityConfig {
 
 
     // ============================================================
+    // CONFIGURAÇÃO DE CORS
+    // ============================================================
+
+    // O CORS permite que o nosso frontend React,
+    // que estará em outro endereço,
+    // possa fazer requisições para esta API.
+    //
+    // Durante o desenvolvimento, nosso React estará
+    // rodando normalmente em:
+    //
+    // http://localhost:5173
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+
+        // Define quais endereços podem acessar nossa API.
+        //
+        // Aqui estamos permitindo o React que está
+        // rodando localmente na porta 5173.
+        config.setAllowedOrigins(
+                List.of(
+                        "http://localhost:5173",
+                        "https://frontend-curso-rocketseat.onrender.com"
+                )
+        );
+
+
+        // Define quais métodos HTTP o frontend
+        // pode utilizar na nossa API.
+        //
+        // GET    -> buscar dados
+        // POST   -> criar dados
+        // PUT    -> atualizar dados
+        // DELETE -> apagar dados
+        // OPTIONS -> requisição utilizada pelo navegador
+        //            para verificar as permissões do CORS.
+        config.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
+
+
+        // Permite que o frontend envie qualquer
+        // cabeçalho HTTP necessário para a API.
+        //
+        // Por exemplo:
+        // Authorization
+        // Content-Type
+        config.setAllowedHeaders(
+                List.of("*")
+        );
+
+
+        // Permite o envio de credenciais nas requisições.
+        //
+        // Isso pode ser utilizado quando trabalhamos
+        // com autenticação baseada em credenciais/cookies.
+        config.setAllowCredentials(true);
+
+
+        // Cria a fonte de configuração do CORS.
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+
+        // Aplica essa configuração para todas as rotas
+        // da nossa API.
+        source.registerCorsConfiguration("/**", config);
+
+
+        return source;
+    }
+
+
+    // ============================================================
     // CONFIGURAÇÃO DO SPRING SECURITY
     // ============================================================
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            FilterTaskAuth filterTaskAuth) throws Exception {
+            FilterTaskAuth filterTaskAuth,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
 
         http
+
+
+                // Ativa o CORS no Spring Security.
+                //
+                // Aqui estamos dizendo para o Spring Security
+                // utilizar a configuração que criamos acima.
+                .cors(cors ->
+                        cors.configurationSource(corsConfigurationSource)
+                )
+
 
                 // Desativa CSRF.
                 // Normalmente é necessário em APIs REST que
@@ -48,10 +141,26 @@ public class SecurityConfig {
 
                 // =================================================
                 // REGRAS DE ACESSO
-                // guarda as regras de autorização:
-                //montando a cadeia de filtros.
                 // =================================================
+
+                // Aqui definimos quem pode acessar
+                // cada endpoint da nossa API.
                 .authorizeHttpRequests(auth -> auth
+
+
+                        // Permite requisições OPTIONS.
+                        //
+                        // O navegador pode enviar uma requisição
+                        // OPTIONS antes da requisição principal
+                        // para verificar as regras do CORS.
+                        //
+                        // Sem essa permissão, o Spring Security
+                        // poderia bloquear essa verificação.
+                        .requestMatchers(
+                                HttpMethod.OPTIONS,
+                                "/**"
+                        ).permitAll()
+
 
                         // Permite que qualquer pessoa crie um usuário.
                         //
@@ -90,3 +199,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
